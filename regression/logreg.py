@@ -129,7 +129,17 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
-        pass
+        # Multipy weights times values for all of X and sum across rows
+        
+        
+        raw_pred=np.sum(self.W * X,axis=1)
+        
+        
+        # Transform to logit
+
+        transformed_pred = [1/(1+np.exp(x)) for x in raw_pred]
+
+        return transformed_pred
     
     def loss_function(self, y_true, y_pred) -> float:
         """
@@ -143,7 +153,16 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The mean loss (a single number).
         """
-        pass
+        # set up empty array
+        loss=[]
+
+        # Loop through all values
+        for i in range(len(y_true)):
+            #Calculate biniary corss entorpy loss using formula
+            loss.append(-(y_true[i]*np.log(y_pred[i])+(1-y_true[i])*np.log(1-y_pred[i])))
+        
+        # return the averge of all loses
+        return np.mean(loss)
         
     def calculate_gradient(self, y_true, X) -> np.ndarray:
         """
@@ -157,4 +176,14 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
-        pass
+        # Make predction
+        y_pred=self.make_prediction(X)
+
+        grads=np.zeros(len(self.W))
+        # Use gross chain rule/derivatives to get loss formula
+        diff=y_true-y_pred
+        # Calculte gradients
+        for i in range(len(self.W)):
+            grads[i]=np.sum(diff*(X[:,i]))
+
+        return grads
