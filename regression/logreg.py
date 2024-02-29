@@ -132,12 +132,15 @@ class LogisticRegressor(BaseRegressor):
         # Multipy weights times values for all of X and sum across rows
         
         
-        raw_pred=np.sum(self.W * X,axis=1)
-        
-        
+        # Sum doesn't work for only 1 x value
+        if X.ndim >1:
+            raw_pred=np.sum(self.W * X,axis=1)
+        else:
+            raw_pred=(self.W * X)
+        transformed_pred=[]
         # Transform to logit
-
-        transformed_pred = [1/(1+np.exp(x)) for x in raw_pred]
+        for pred in raw_pred:
+            transformed_pred.append(1/(1+np.exp(-pred)))
 
         return transformed_pred
     
